@@ -1,33 +1,28 @@
 const Expense = require("../models/expenseModel");
 const User = require("../models/userModel");
-const sequelize = require("../util/database");
 const UserServices = require("../services/userServices");
 const S3Services = require("../services/s3Services");
 
 exports.addExpense = async (req, res, next) => {
-  const t = await sequelize.transaction();
   try {
     const { amount, description, category } = req.body;
     const userId = req.user.id;
-    await req.user.createExpense(
+    const expense = await new Expense(
       {
         amount,
         description,
         category,
-      },
-      { transaction: t }
-    );
+        userId
+      }
+    ).save()
     const totalExpense = req.user.totalExpenses + Number(amount);
-    await User.update(
+    await User.findByIdAndUpdate(userId,
       {
         totalExpenses: totalExpense,
-      },
-      { where: { id: userId }, transaction: t }
-    );
-    await t.commit();
+      });
+      console.log("Fetched all expenses successfully");
     next();
   } catch (err) {
-    await t.rollback();
     console.log(err);
   }
 };
@@ -36,10 +31,9 @@ exports.getAllExpenses = async (req, res, next) => {
     const str = req.query.page;
     const page = str ? Number(str.split("=")[0]) : 1;
     const ltd = str ? Number(str.split("=")[1]) : 10;
-    let count = await Expense.count({ where: { userId: req.user.id } });
+    let count = await Expense.count({ userId: req.user.id });
     const isPremium = req.user.isPremium;
-    const expenses = await Expense.findAll({
-      where: { userId: req.user.id },
+    const expenses = await Expense.find({ userId: req.user.id,
       offset: (page - 1) * ltd,
       limit: ltd,
     });

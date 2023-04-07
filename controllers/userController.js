@@ -10,38 +10,31 @@ const { v4: uuidv4 } = require("uuid");
 const signup = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
-    const signedUser = await User.findOne({
-      where: { email: email },
-      transaction: t,
-    });
+    const signedUser = await User.findOne({email: email});
     if (!signedUser) {
       const hashedPwd = await bcrypt.hash(password, 10);
-      await User.create(
-        {
-          name,
-          email,
-          password: hashedPwd,
-        },
-        { transaction: t }
-      );
-      await t.commit();
+      const user = await new User({
+        name,
+        email,
+        password: hashedPwd,
+      }).save();
+      console.log("sign up successfully");
       return res.json("sign up successfully");
     } else {
-      await t.rollback();
+      console.log("User already signed up");
       return res.json({ message: "User already signed up" });
     }
   } catch (err) {
-    await t.rollback();
     console.log(err);
   }
 };
 const authUser = (id, name) => {
   return jwt.sign({ userId: id, userName: name }, process.env.JWT_SECRET);
 };
-const signin = async (req, res, next) => {
+const signin = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const usr = await User.findOne({ where: { email: email } });
+    const usr = await User.findOne({ email: email });
     if (!usr) {
       return res.status(404).json({ message: "Email not registered" });
     } else {
@@ -49,6 +42,7 @@ const signin = async (req, res, next) => {
       if (!result) {
         return res.status(401).json({ message: "Password Invalid" });
       } else {
+        console.log("login success");
         return res.json({
           message: "login success",
           token: authUser(usr.id, usr.name),
