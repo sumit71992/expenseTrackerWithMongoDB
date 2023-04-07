@@ -373,7 +373,7 @@ leaderboard.addEventListener("click", async (e) => {
       div.appendChild(notesTable);
 
       const token = localStorage.getItem("token");
-      const data = await axios.get("http://3.109.42.131:3000/user/reports", {
+      const data = await axios.get("http://localhost:3000/user/reports", {
         headers: { Authorization: token },
       });
       const report = data.data.report;

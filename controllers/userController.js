@@ -1,6 +1,6 @@
 const User = require("../models/userModel");
 // const Forgot = require("../models/forgotPasswordModel");
-// const Expense = require("../models/expenseModel");
+const Expense = require("../models/expenseModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Sib = require("sib-api-v3-sdk");
@@ -50,6 +50,7 @@ const signin = async (req, res) => {
       }
     }
   } catch (err) {
+    console.log(err);
     return res.status(500).json({ message: err });
   }
 };
@@ -182,7 +183,7 @@ const updatepassword = async (req,res)=>{
     const userid = await Forgot.findByPk(id,{transaction:t});
     await User.update({
       password:pwd
-    },{where:{id:userid.userId},transaction:t});
+    },{where:{id:userid.userId}});
     await t.commit();
     return res.status(200).json({message:"Success"});
   }catch(err){
@@ -192,16 +193,16 @@ const updatepassword = async (req,res)=>{
   
 }
 
-// const getReport = async (req,res)=>{
-//   try{
-//     const report = await Expense.findAll({where:{userId:req.user.id},
-//       order: [['updatedAt', "ASC"]]
-//     });
-//     return res.status(200).json({report});
-//   }catch(err){
-//     return res.status(400).json({err});
-//   }
-// }
+const getReport = async (req,res)=>{
+  try{
+    const report = await Expense.find({userId: req.user.id});
+    console.log("report generated");
+    return res.status(200).json({report});
+  }catch(err){
+    console.log(err);
+    return res.status(400).json({err});
+  }
+}
 
 module.exports = {
   signup,
@@ -209,5 +210,5 @@ module.exports = {
   // forgotPassword,
   resetPassword,
   updatepassword,
-  // getReport,
+  getReport,
 };
