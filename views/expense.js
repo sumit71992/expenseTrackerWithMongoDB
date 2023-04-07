@@ -133,7 +133,7 @@ const fetchExpenses = (response) => {
     tr.appendChild(td2);
     btn.appendChild(document.createTextNode("Delete"));
     btn.className = "btn btn-secondary p-0 del";
-    btn.setAttribute("id", expense[i].id);
+    btn.setAttribute("id", expense[i]._id);
     td3.classList = "del";
     td3.appendChild(btn);
     tr.appendChild(td3);
