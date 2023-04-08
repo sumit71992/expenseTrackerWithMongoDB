@@ -146,6 +146,7 @@ const resetPassword = async (req, res) => {
                       password: password.value
                   }
                   const updated = await axios.post("http://localhost:3000/password/updatepassword/${uuid}", obj);
+                  location.replace("../../signin.html")
       
               })
           </script>
