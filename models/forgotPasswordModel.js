@@ -1,13 +1,15 @@
-const { BOOLEAN } = require("sequelize");
-const Sequelize  = require("sequelize");
-const sequelize = require('../util/database');
+const mongoose  = require('mongoose');
+const Schema = mongoose.Schema;
 
-const Forgot = sequelize.define('forgot',{
-id:{
-    type: Sequelize.STRING,
-    allowNull: false,
-    primaryKey: true
+const forgotSchema = new Schema({
+_id:{
+    type: String,
 },
-isActive: Sequelize.BOOLEAN
+isActive:{
+    type: Boolean
+},
+userId:{
+    type: Schema.Types.ObjectId
+}
 });
-module.exports = Forgot;
+module.exports = mongoose.model("Forgot",forgotSchema);

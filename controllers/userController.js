@@ -1,5 +1,5 @@
 const User = require("../models/userModel");
-// const Forgot = require("../models/forgotPasswordModel");
+const Forgot = require("../models/forgotPasswordModel");
 const Expense = require("../models/expenseModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -55,66 +55,56 @@ const signin = async (req, res) => {
   }
 };
 
-// const forgotPassword = async (req, res, next) => {
-//   const t = await sequelize.transaction();
-//   try {
-//     const email = req.body.email;
-//     const userid = await User.findOne({ where: { email: email } });
-//     if (userid) {
-//       const uuid = uuidv4();
-//       const url = "http://localhost:3000/password/resetpassword/" + uuid;
-//       const client = Sib.ApiClient.instance;
-//       var apiKey = client.authentications["api-key"];
-//       apiKey.apiKey = process.env.EMAIL_API_KEY;
+const forgotPassword = async (req, res) => {
+  try {
+    const email = req.body.email;
+    const userid = await User.findOne({ email: email  });
+    if (userid) {
+      const uuid = uuidv4();
+      const url = "http://localhost:3000/password/resetpassword/" + uuid;
+      const client = Sib.ApiClient.instance;
+      var apiKey = client.authentications["api-key"];
+      apiKey.apiKey = process.env.EMAIL_API_KEY;
 
-//       const tranEmailApi = new Sib.TransactionalEmailsApi();
-//       const sender = {
-//         email: "thatanjan@gmail.com",
-//         name: "Sumit",
-//       };
-//       const receivers = [
-//         {
-//           email: email,
-//         },
-//       ];
-//       await tranEmailApi.sendTransacEmail({
-//         sender,
-//         to: receivers,
-//         subject: "Reset password Link",
-//         htmlContent: `<a href=${url}>click here to reset password</a>`,
-//       });
-//       await Forgot.create(
-//         {
-//           id: uuid,
-//           userId: userid.id,
-//           isActive: true,
-//         },
-//         { transaction: t }
-//       );
-//       await t.commit();
-//       return res.json({ message: "Success" });
-//     } else {
-//       return res.json({ message: "Email id not registered" });
-//     }
-//   } catch (err) {
-//     await t.rollback();
-//     console.log(err);
-//     return res.json(err);
-//   }
-// };
+      const tranEmailApi = new Sib.TransactionalEmailsApi();
+      const sender = {
+        email: "thatanjan@gmail.com",
+        name: "Sumit",
+      };
+      const receivers = [
+        {
+          email: email,
+        },
+      ];
+      await tranEmailApi.sendTransacEmail({
+        sender,
+        to: receivers,
+        subject: "Reset password Link",
+        htmlContent: `<a href=${url}>click here to reset password</a>`,
+      });
+      await new Forgot(
+        {
+          _id: uuid,
+          userId: userid._id,
+          isActive: true,
+        }).save();
+        console.log("Reset link sent");
+      return res.json({ message: "Success" });
+    } else {
+      return res.json({ message: "Email id not registered" });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.json(err);
+  }
+};
 const resetPassword = async (req, res) => {
-  const t = await sequelize.transaction();
   try {
     const uuid = req.params.id;
-    const reset = await Forgot.findByPk(uuid, { transaction: t });
+    const reset = await Forgot.findById(uuid);
     if (reset.isActive === true) {
-      await Forgot.update(
-        {
-          isActive: false,
-        },
-        { where: { id: uuid }, transaction: t }
-      );
-      await t.commit();
+      reset.isActive = false;
+      await reset.save();
       res.status(200).send(`<!DOCTYPE html>
       <html lang="en">
       
@@ -163,31 +153,27 @@ const resetPassword = async (req, res) => {
       </body>
       
       </html>`);
-     
+     console.log('link changed successfully');
       res.end();
     } else {
       return res.json({ message: "Link Expired" });
     }
   } catch (err) {
     console.log(err);
-    await t.rollback();
-    console.log(err);
     return res.json(err);
   }
 };
 const updatepassword = async (req,res)=>{
-  const t = await sequelize.transaction();
   try{
     const id = req.params.id;
     const pwd = await bcrypt.hash(req.body.password,10) ;
-    const userid = await Forgot.findByPk(id,{transaction:t});
-    await User.update({
+    const userid = await Forgot.findById(id);
+    await User.findByIdAndUpdate(userid.userId,{
       password:pwd
-    },{where:{id:userid.userId}});
-    await t.commit();
+    });
+    console.log("Password changed");
     return res.status(200).json({message:"Success"});
   }catch(err){
-    await t.rollback();
     console.log(err);
   }
   
@@ -207,7 +193,7 @@ const getReport = async (req,res)=>{
 module.exports = {
   signup,
   signin,
-  // forgotPassword,
+  forgotPassword,
   resetPassword,
   updatepassword,
   getReport,

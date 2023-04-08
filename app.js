@@ -18,7 +18,7 @@ app.use(compression());
 const mainRoutes = require("./routes/expenseRoute");
 const userRoutes = require("./routes/userRoute");
 // const orderRoutes = require("./routes/orderRoute");
-// const passwordRoutes = require("./routes/passwordRoute");
+const passwordRoutes = require("./routes/passwordRoute");
 
 const port = process.env.PORT || 3000;
 
@@ -29,7 +29,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/expense", mainRoutes);
 app.use("/user", userRoutes);
 // app.use("/order", orderRoutes);
-// app.use("/password", passwordRoutes);
+app.use("/password", passwordRoutes);
 app.use((req, res) => {
   if(req.url=="/"){
     res.sendFile(path.join(__dirname, `views/signin.html`));
