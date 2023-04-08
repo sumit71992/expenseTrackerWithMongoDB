@@ -27,7 +27,7 @@
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.0.3",
     "pug": "^3.0.2",
-    "razorpay": "^0.0.0",
+    "razorpay": "^2.8.6",
     "sib-api-v3-sdk": "^8.5.0",
     "uuid": "^9.0.0"
   }
