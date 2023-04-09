@@ -20,6 +20,7 @@ exports.addExpense = async (req, res, next) => {
     next();
   } catch (err) {
     console.log(err);
+    return res.status(500).json({ Error: err, message: "Something went wrong" });
   }
 };
 exports.getAllExpenses = async (req, res, next) => {
@@ -44,6 +45,7 @@ exports.getAllExpenses = async (req, res, next) => {
     });
   } catch (err) {
     console.log(err);
+    return res.status(500).json({ Error: err, message: "Something went wrong" });
   }
 };
 
@@ -58,7 +60,7 @@ exports.deleteExpense = async (req, res, next) => {
     next();
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ err, message: "Something went wrong" });
+    return res.status(500).json({ Error: err, message: "Something went wrong" });
   }
 };
 exports.getEditExpense = async (req, res) => {
@@ -68,6 +70,7 @@ exports.getEditExpense = async (req, res) => {
     return res.json({ expense });
   } catch (err) {
     console.log(err);
+    return res.status(500).json({ Error: err, message: "Something went wrong" });
   }
 };
 exports.updateExpense = async (req, res) => {
@@ -84,6 +87,7 @@ exports.updateExpense = async (req, res) => {
     return res.json({ expense });
   } catch (err) {
     console.log(err);
+    return res.status(500).json({ Error: err, message: "Something went wrong" });
   }
 };
 exports.getLeaderboard = async (req, res) => {
@@ -92,6 +96,7 @@ exports.getLeaderboard = async (req, res) => {
     return res.json({ userLeaderboard });
   } catch (err) {
     console.log(err);
+    return res.status(500).json({ Error: err, message: "Something went wrong" });
   }
 };
 

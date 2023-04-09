@@ -26,6 +26,7 @@ const signup = async (req, res, next) => {
     }
   } catch (err) {
     console.log(err);
+    return res.status(500).json({ Error: err, message: "Something went wrong" });
   }
 };
 const authUser = (id, name) => {
@@ -51,7 +52,7 @@ const signin = async (req, res) => {
     }
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ message: err });
+    return res.status(500).json({ Error: err, message: "Something went wrong" });
   }
 };
 
@@ -95,7 +96,7 @@ const forgotPassword = async (req, res) => {
     }
   } catch (err) {
     console.log(err);
-    return res.json(err);
+    return res.status(500).json({ Error: err, message: "Something went wrong" });
   }
 };
 const resetPassword = async (req, res) => {
@@ -162,6 +163,7 @@ const resetPassword = async (req, res) => {
   } catch (err) {
     console.log(err);
     return res.json(err);
+    return res.status(500).json({ Error: err, message: "Something went wrong" });
   }
 };
 const updatepassword = async (req,res)=>{
@@ -176,6 +178,7 @@ const updatepassword = async (req,res)=>{
     return res.status(200).json({message:"Success"});
   }catch(err){
     console.log(err);
+    return res.status(500).json({ Error: err, message: "Something went wrong" });
   }
   
 }
@@ -187,7 +190,7 @@ const getReport = async (req,res)=>{
     return res.status(200).json({report});
   }catch(err){
     console.log(err);
-    return res.status(400).json({err});
+    return res.status(500).json({ Error: err, message: "Something went wrong" });
   }
 }
 

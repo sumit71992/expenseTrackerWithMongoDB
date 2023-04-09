@@ -23,6 +23,7 @@ const premium = async (req, res) => {
     });
   } catch (err) {
     console.log(err);
+    return res.status(500).json({ Error: err, message: "Something went wrong" });
   }
 };
 const updateStatus = async (req, res) => {
